@@ -2,22 +2,9 @@
   <v-container>
     <v-row align="center" justify="center">
       <v-col cols="auto">
-        <v-btn density="compact" @click="firstButtonClick">Первая кнопка</v-btn>
+        Фильтр
       </v-col>
-
-      <v-col cols="auto">
-        <v-btn density="comfortable" @click="addRow">Вторая</v-btn>
-      </v-col>
-
-      <v-col cols="auto">
-        <v-btn density="default" rounded="xl" @click="changeEl">Футбол</v-btn>
-      </v-col>
-    </v-row>
-    <v-row>
-      {{ el }}
-    </v-row>
-    <v-row>
-      <v-text-field v-model="el" />
+      <v-col cols="auto" />
     </v-row>
   </v-container>
   <v-table>
@@ -44,6 +31,7 @@
 </template>
 
 <script>
+  import axios from 'axios'
   export default {
     data () {
       return {
@@ -91,6 +79,12 @@
           },
         ],
       }
+    },
+    mounted () {
+      console.log('asssss');
+      axios.get('/api/v2/competitions/')
+        .then(response => console.log(response.data))
+        .catch(error => console.error(error));
     },
     methods: {
       firstButtonClick () {
