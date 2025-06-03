@@ -28,9 +28,9 @@ export default defineConfig({
       fontsource: {
         families: [
           {
-            name: "Roboto",
+            name: 'Roboto',
             weights: [100, 300, 400, 500, 700, 900],
-            styles: ["normal", "italic"],
+            styles: ['normal', 'italic'],
           },
         ],
       },
@@ -62,6 +62,15 @@ export default defineConfig({
   },
   server: {
     port: 3000,
+    proxy: {
+      '/api': {
+        target: 'https://api.football-data.org', // Ваш API сервер
+        changeOrigin: true,
+        rewrite: path => path.replace(/^\/api/, ''),
+        secure: false, // Если нужен обход SSL
+      },
+
+    },
   },
   css: {
     preprocessorOptions: {

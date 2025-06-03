@@ -1,5 +1,5 @@
 <template>
-  <HelloWorld />
+  <Leagues />
 </template>
 
 <script setup>
