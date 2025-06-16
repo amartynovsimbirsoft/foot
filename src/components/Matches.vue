@@ -6,18 +6,41 @@
       color="primary"
       indeterminate
     />
-    <v-alert
-      v-else-if="matches.length === 0"
-      type="info"
+    <v-row>
+      <v-col>
+        <v-date-picker
+          v-model="dateFrom"
+        />
+      </v-col>
+      <v-col>
+        <v-text-field v-model="formattedDate" />
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col>
+        <v-btn @click="clearFilter">Очистить фильтр</v-btn>
+      </v-col>
+    </v-row>
+
+    <v-data-table
+      :headers="headers"
+      :items="filteredMatches"
     >
-      {{ searchQuery ? 'Ни одного матча не найдено' : 'Нет доступных матчей' }}
-    </v-alert>
-    <template v-else>
-      <v-data-table
-        :headers="headers"
-        :items="matches"
-      />
-    </template>
+      <template #item.utcDate="{ item }">
+        {{ new Date(item.utcDate).toLocaleString() }}
+      </template>
+
+      <template #item.status="{ item }">
+        <v-chip :color="getStatusColor(item.status)" small>
+          {{ getStatusText(item.status) }}
+        </v-chip>
+      </template>
+
+      <template #item.teams="{ item }">
+        <b>{{ item.homeTeam?.name }}</b> - {{ item.awayTeam?.name }}
+      </template>
+    </v-data-table>
+
   </div></template>
 
 
@@ -26,22 +49,32 @@
   export default {
     data () {
       return {
+        dateFrom: null,
         page: 1,
         itemsPerPage: 12,
         matches: [],
         isLoading: false,
         headers: [
-          {
-            align: 'start',
-            key: 'utcDate',
-            sortable: false,
-            title: 'Дата',
-          },
-          { key: 'status', title: 'Статус ' },
+          { key: 'utcDate', title: 'Дата' },
+          { key: 'status', title: 'Статус' },
+          { key: 'teams', title: 'Команды' },
+          { key: 'score', title: 'Счет' },
         ],
       }
     },
     computed: {
+      filteredMatches () {
+        if (!this.dateFrom) return this.matches;
+        return this.matches.filter (match => {
+          const matchDate = new Date(match.utcDate);
+          if (matchDate >= this.dateFrom) return true
+          return false
+        }
+        )
+      },
+      formattedDate () {
+        return new Date (this.dateFrom).toLocaleString()
+      },
       totalPages () {
         return Math.ceil(this.matches.length / this.itemsPerPage)
       },
@@ -55,6 +88,25 @@
       this.loadMatches();
     },
     methods: {
+      clearFilter () {
+        this.dateFrom = null
+      },
+      getStatusText (status) {
+        const statusMap = {
+          FINISHED: 'Матч завершен',
+          SCHEDULED: 'Запланирован',
+          LIVE: 'В прямом эфире',
+        }
+        return statusMap[status] || status
+      },
+      getStatusColor (status) {
+        const statusMap = {
+          FINISHED: 'green',
+          SCHEDULED: 'blue',
+          LIVE: 'red',
+        }
+        return statusMap[status] || status
+      },
       loadMatches (){
         this.isLoading = true;
         const leagueId = this.$route.query.id;
