@@ -39,27 +39,14 @@
           md="4"
           sm="6"
         >
-          <v-card
-            class="ma-2"
-            @click="goToLeague(league.id)"
-          >
-            <v-img
-              v-if="league.emblem"
-              class="grey lighten-2"
-              contain
-              height="100"
-              :src="league.emblem"
-            />
-            <v-img
-              v-else
-              class="grey lighten-2"
-              contain
-              height="100"
-              src="/src/assets/placeholder.svg"
-            />
-            <v-card-title>{{ league.name }}</v-card-title>
-            <v-card-subtitle>{{ league.area?.name || "Не указано" }}</v-card-subtitle>
-          </v-card>
+          <card
+            :id="league.id"
+            :emblem="league.emblem"
+            :league="league.area.name"
+            :name="league.name"
+            @handle-card-click="goToLeague"
+          />
+
         </v-col>
       </v-row>
 
@@ -77,7 +64,9 @@
 
 <script>
   import api from '@/api'
+  import Card from '@/components/Card.vue'
   export default {
+    components: { Card },
     data () {
       return {
         page: 1,
@@ -116,38 +105,13 @@
           .catch(error => console.error(error))
           .finally(() => this.isLoading = false);
       },
-      goToLeague (leagueId) {
-        this.$router.push(`/league/?id=${leagueId}`);
+      goToLeague (payload) {
+        this.$router.push(`/league/?id=${payload.id}`);
       },
     },
   }
 </script>
 <style scoped>
-.league-card {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  transition: transform 0.3s;
-  margin-bottom: 16px;
-}
-
-.league-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.v-card-title {
-  font-size: 1.2rem;
-  font-weight: bold;
-  padding-bottom: 0;
-}
-
-.v-card-subtitle {
-  padding-top: 0;
-  font-size: 1rem;
-}
-
 .v-pagination {
   justify-content: center;
 }

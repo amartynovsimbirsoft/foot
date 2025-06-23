@@ -26,16 +26,17 @@
       :headers="headers"
       :items="filteredMatches"
     >
+      <!-- eslint-disable-next-line -->
       <template #item.utcDate="{ item }">
         {{ new Date(item.utcDate).toLocaleString() }}
       </template>
-
+      <!-- eslint-disable-next-line -->
       <template #item.status="{ item }">
         <v-chip :color="getStatusColor(item.status)" small>
           {{ getStatusText(item.status) }}
         </v-chip>
       </template>
-
+      <!-- eslint-disable-next-line -->
       <template #item.teams="{ item }">
         <b>{{ item.homeTeam?.name }}</b> - {{ item.awayTeam?.name }}
       </template>
